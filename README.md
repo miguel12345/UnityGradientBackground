@@ -15,7 +15,7 @@ Get a beautiful background gradient just by adding a simple script to your camer
 ## Performance
 + Background is rendered after opaque objects to avoid unnecessary overdraw
 + Optimized shaders that avoid dynamic if conditions
-+ Option to "bake" the background texture, to get more performance in exchange for more memory
++ Option to "bake" the background texture, thereby exchanging memory for performance
 
 ## Instructions
 
