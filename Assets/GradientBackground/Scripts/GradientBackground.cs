@@ -105,8 +105,9 @@ namespace MF
 
 		private void RebakeRenderTexture()
 		{
-			if (_backgroundBakeRenderTexture == null)
+			if (_backgroundBakeRenderTexture == null){
 				_backgroundBakeRenderTexture = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.RGB565);
+			}
 
 			if (_bakeRenderTextureCommandBuffer == null) 
 				CreateBakeRenderTextureCommandBuffer();
@@ -183,6 +184,7 @@ namespace MF
 			_backgroundGradientMaterial = new Material(gradientBackgroundShader);
 			_backgroundRenderBakedTextureMaterial = new Material(gradientBackgroundShader);
 			UpdateCommandBufferCommands();
+			InitializeScreenSize();
 		}
 
 		private void UpdateCommandBufferCommands()
@@ -255,7 +257,18 @@ namespace MF
 			#if UNITY_EDITOR
 			if (!UnityEditor.EditorApplication.isPlaying) SetDirty();
 			#endif
-			
+
+			if (!_isDirty && UseBakedRenderTexture && DidScreenSizeChange())
+			{
+				_backgroundBakeRenderTexture.Release();
+				_backgroundBakeRenderTexture = null;
+
+				_bakeRenderTextureCommandBuffer.Release();
+				_bakeRenderTextureCommandBuffer = null;
+				
+				SetDirty();
+			}
+
 			if (_isDirty)
 			{
 				UpdateCommandBufferCommands();
@@ -268,7 +281,27 @@ namespace MF
 				_isDirty = false;
 			}
 		}
-		
+
+
+		private Vector2 _currentScreenSize = Vector2.zero;
+
+		private void InitializeScreenSize()
+		{
+			_currentScreenSize = new Vector2(Screen.width, Screen.height);
+		}
+
+		private bool DidScreenSizeChange()
+		{
+			var screenSize = new Vector2(Screen.width, Screen.height);
+
+			if (!screenSize.Equals(_currentScreenSize))
+			{
+				_currentScreenSize = screenSize;
+				return true;
+			}
+			return false;
+		}
+
 		private void OnEnable()
 		{
 			if (!_awakeCalled)
