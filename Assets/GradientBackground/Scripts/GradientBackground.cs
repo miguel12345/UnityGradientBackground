@@ -116,6 +116,7 @@ namespace MF
 				CreateBakeRenderTextureCommandBuffer();
 
 			_backgroundRenderBakedTextureMaterial.mainTexture = _backgroundBakeRenderTexture;
+
 			Graphics.ExecuteCommandBuffer(_bakeRenderTextureCommandBuffer);
 		}
 
@@ -260,11 +261,39 @@ namespace MF
 			SetDirty();
 		}
 
+		#region WebGLHack
+
+		/**
+		Webgl bake hack: Graphics.ExecuteCommandBuffer doesn't seem to work if called in the
+		first frame, so that's why we force a call to SetDirty() (and, consequently, another Graphics.ExecuteCommandBuffer)  
+		in the second frame */
+		private bool _forcedDirtyInSecondFrame = false;
+
+		private void ApplyWebglBakedRenderTextureHack()
+		{
+			if (Application.isPlaying)
+			{
+				if (!_forcedDirtyInSecondFrame && Time.frameCount > 1)
+				{
+					_forcedDirtyInSecondFrame = true;
+					SetDirty();
+				}
+			}
+		}
+
+		#endregion
+		
+
 		private void Update()
 		{
 			#if UNITY_EDITOR
 			if (!UnityEditor.EditorApplication.isPlaying) SetDirty();
 			#endif
+
+			if (UseBakedRenderTexture)
+			{
+				ApplyWebglBakedRenderTextureHack();
+			}
 
 			if (!_isDirty && UseBakedRenderTexture && DidScreenSizeChange())
 			{
