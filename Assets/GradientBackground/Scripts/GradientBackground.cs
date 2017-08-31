@@ -68,6 +68,8 @@ namespace MF
 		private Camera _ownCamera;
 		private CommandBuffer _commandBuffer;
 		private Mesh _fullScreenMesh;
+		
+		[SerializeField]
 		private Material _backgroundGradientMaterial;
 
 		private int _shaderGradientColorsPropertyId;
@@ -87,6 +89,7 @@ namespace MF
 		[NonSerialized] private bool _awakeCalled;
 		[NonSerialized] private bool _isDirty;
 		[NonSerialized] private CommandBuffer _bakeRenderTextureCommandBuffer;
+		[SerializeField]
 		private Material _backgroundRenderBakedTextureMaterial;
 		
 		[SerializeField,HideInInspector]
@@ -180,9 +183,14 @@ namespace MF
 
 			_commandBuffer = new CommandBuffer {name = "Background gradient"};
 			_fullScreenMesh = CreateQuadMesh();
-			var gradientBackgroundShader = Shader.Find("Hidden/GradientBackground");
-			_backgroundGradientMaterial = new Material(gradientBackgroundShader);
-			_backgroundRenderBakedTextureMaterial = new Material(gradientBackgroundShader);
+			
+			if (_backgroundGradientMaterial == null || _backgroundRenderBakedTextureMaterial == null)
+			{
+				var gradientBackgroundShader = Shader.Find("Hidden/GradientBackground");
+				_backgroundGradientMaterial = new Material(gradientBackgroundShader);			
+				_backgroundRenderBakedTextureMaterial = new Material(gradientBackgroundShader);
+			}
+			
 			UpdateCommandBufferCommands();
 			InitializeScreenSize();
 		}
