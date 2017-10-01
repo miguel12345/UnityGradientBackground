@@ -109,7 +109,7 @@ namespace MF
 		private void RebakeRenderTexture()
 		{
 			if (_backgroundBakeRenderTexture == null){
-				_backgroundBakeRenderTexture = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.RGB565);
+				_backgroundBakeRenderTexture = new RenderTexture(Screen.width, Screen.height, 0, GetRenderTextureFormat());
 			}
 
 			if (_bakeRenderTextureCommandBuffer == null) 
@@ -118,6 +118,18 @@ namespace MF
 			_backgroundRenderBakedTextureMaterial.mainTexture = _backgroundBakeRenderTexture;
 
 			Graphics.ExecuteCommandBuffer(_bakeRenderTextureCommandBuffer);
+		}
+		
+		private static RenderTextureFormat GetRenderTextureFormat()
+		{
+			if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RGB565))
+			{
+				return RenderTextureFormat.RGB565;
+			}
+			else
+			{
+				return RenderTextureFormat.ARGB32;
+			}
 		}
 
 		private void CreateBakeRenderTextureCommandBuffer()
