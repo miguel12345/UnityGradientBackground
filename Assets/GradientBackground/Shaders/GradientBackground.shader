@@ -35,7 +35,7 @@
 				o.vertex = v.vertex;
 				
 				o.vertex.w = _ProjectionParams.z;
-				o.vertex.z = o.vertex.w;
+				o.vertex.z = 1.0;
 				
 				o.vertex.x = sign(v.vertex.x) * o.vertex.w;
 				o.vertex.y = sign(v.vertex.y) * o.vertex.w;
@@ -165,7 +165,7 @@
                 o.vertex = v.vertex;
                 
                 o.vertex.w = _ProjectionParams.z;
-                o.vertex.z = o.vertex.w;
+                o.vertex.z = 1.0;
                 
                 o.vertex.x = sign(v.vertex.x) * o.vertex.w;
                 o.vertex.y = sign(v.vertex.y) * o.vertex.w;
