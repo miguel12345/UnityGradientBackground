@@ -11,39 +11,13 @@
 		Pass
 		{
 			CGPROGRAM
+			#include "GradientBackgroundCore.cginc"
+			
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile VERTICAL_GRADIENT HORIZONTAL_GRADIENT RADIAL_FIT_GRADIENT RADIAL_ASPECT_WIDTH_GRADIENT RADIAL_ASPECT_HEIGHT_GRADIENT
 			
 			#include "UnityCG.cginc"
-
-			struct appdata
-			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-			};
-
-			struct v2f
-			{
-				float4 vertex : SV_POSITION;
-				float2 uv : TEXCOORD0;
-			};
-
-			v2f vert (appdata v)
-			{
-				v2f o;
-				o.vertex = v.vertex;
-				
-				o.vertex.w = _ProjectionParams.z;
-				o.vertex.z = 1.0;
-				
-				o.vertex.x = sign(v.vertex.x) * o.vertex.w;
-				o.vertex.y = sign(v.vertex.y) * o.vertex.w;
-				
-				o.uv = v.uv; 
-				
-				return o;
-			}
 			
 			#define MAXIMUM_COLORS  6
 			sampler2D _MainTex;
@@ -85,31 +59,32 @@
 			
 			fixed3 calcColorForNormalizedTime(float t) {
 			
-			    float currentIndex = 0.0;
-			    float endIndex = 999.0;
+			    int currentIndex = 0;
+			    int endIndex = 999;
 			    
-			    while(currentIndex < MAXIMUM_COLORS) { //This loop will be unrolled during shader compilation, avoiding dynamic if's that break paralellization 
-			        float currentTime = _GradientTimes[currentIndex];
-			        float diff = currentTime - t;
-			        float signal = step(0.0,diff);
-			        float indexToConsider = lerp(endIndex,currentIndex,signal); 
-			        endIndex = min(endIndex,indexToConsider);
-			        currentIndex ++;
+			    for(;currentIndex < MAXIMUM_COLORS; currentIndex ++) {
+			    
+                    float currentTime = _GradientTimes[currentIndex];
+                    float diff = currentTime - t;
+                    float signal = step(0.0,diff);
+                    float indexToConsider = lerp(endIndex,currentIndex,signal); 
+                    endIndex = min(endIndex,indexToConsider);
+
 			    }
 			    
-			    float startIndex = max(endIndex-1.0,0.0);
+			    int startIndex = max(endIndex-1,0);
 			    
 			    fixed3 startColor = _GradientColors[startIndex];
 			    fixed3 endColor = _GradientColors[endIndex];
 			    
 			    float startTime = _GradientTimes[startIndex];
 			    float endTime = _GradientTimes[endIndex];
-			    
-			    fixed3 lerpFactor = (t - startTime) / (max((endTime - startTime),0.001));
-			    
-			    lerpFactor = saturate(lerpFactor);
-			    
-			     return lerp(startColor,endColor,lerpFactor);
+
+            float lerpFactor = (t - startTime) / (max((endTime - startTime),0.001));
+
+            lerpFactor = saturate(lerpFactor);
+
+            return lerp(startColor,endColor,lerpFactor);
 			}
 			
 			float calcNormalizedTime(float2 uv) {
@@ -142,38 +117,11 @@
 		Pass
         {
             CGPROGRAM
+			#include "GradientBackgroundCore.cginc"
             #pragma vertex vert
             #pragma fragment frag
             
             #include "UnityCG.cginc"
-
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct v2f
-            {
-                float4 vertex : SV_POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = v.vertex;
-                
-                o.vertex.w = _ProjectionParams.z;
-                o.vertex.z = 1.0;
-                
-                o.vertex.x = sign(v.vertex.x) * o.vertex.w;
-                o.vertex.y = sign(v.vertex.y) * o.vertex.w;
-                
-                o.uv = v.uv; 
-                
-                return o;
-            }
             
             sampler2D _MainTex;
             

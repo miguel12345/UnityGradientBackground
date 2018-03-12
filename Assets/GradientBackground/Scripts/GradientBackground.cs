@@ -122,14 +122,7 @@ namespace MF
 		
 		private static RenderTextureFormat GetRenderTextureFormat()
 		{
-			if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.RGB565))
-			{
-				return RenderTextureFormat.RGB565;
-			}
-			else
-			{
 				return RenderTextureFormat.ARGB32;
-			}
 		}
 
 		private void CreateBakeRenderTextureCommandBuffer()

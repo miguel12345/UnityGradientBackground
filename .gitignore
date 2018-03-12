@@ -83,3 +83,4 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 Assets/Plugins/Editor/JetBrains/Unity3DRider.cs
+.idea/
